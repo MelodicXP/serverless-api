@@ -13,13 +13,25 @@ const personModel = dynamoose.model('people', schema)
 
 // main execution when event comes in
 exports.handler = async(event) => {
+  // log body to ensure in proper format
   let parsedBody = JSON.parse(event.body);
   console.log(parsedBody);
   
-  // TODO implement
+  // initialize response
   const response = {
-      statusCode: 200,
-      body: JSON.stringify(''),
+      statusCode: null,
+      body: null,
   };
+  
+  // create new person and add to db, catch error
+  try {
+    let newPerson = await personModel.create(parsedBody);
+    response.body = JSON.stringify(newPerson);
+    response.statusCode = 200;
+  } catch (e) {
+    response.body = JSON.stringify(e.message);
+    response.statusCode = 500;
+  }
+  
   return response;
 };
