@@ -12,19 +12,19 @@ const schema = new dynamoose.Schema({
 const personModel = dynamoose.model('people', schema)
 
 exports.handler = async(event) => {
-  console.log('the path parameter: ', event.pathParameters.id);
   
   // initialize response
   const response = {statusCode: null, body: null};
   
   try {
     let results = null;
-    let pathId = event.pathParameters.id;
+    let pathId = event.pathParameters && event.pathParameters.id;
     
     // if event has a path id, execute 'get one'from database
     if (pathId) {
       // scan all items and filter all items where the key `id` contains `event.pathParameters.id`
-      results = await personModel.scan("id").contains(pathId).exec();
+      // results = await personModel.scan("id").contains(pathId).exec();
+      results = await personModel.get(pathId);
     } else {
       // request all data from database
       results = await personModel.scan().exec();
